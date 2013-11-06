@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSeadragonAnnoHost Demo</title>
+
+    <script type="text/javascript" src='scripts/jquery-1.10.2.min.js'></script>
+    <script type="text/javascript" src='scripts/knockout-2.3.0.js'></script>
+    <script type="text/javascript" src='scripts/bootstrap.min.js'></script>
+    <script type="text/javascript" src='scripts/openseadragon.min.js'></script>
+    <script type="text/javascript" src='scripts/openseadragon-imaginghelper.min.js'></script>
+    <script type="text/javascript" src='scripts/openseadragon-viewerinputhook.min.js'></script>
+    <script type="text/javascript" src='scripts/openseadragon-annohost.js'></script>
+
+    <link rel="stylesheet" type="text/css" href="content/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="content/css/bootstrap-overrides.css" />
+    <link rel="stylesheet" type="text/css" href="content/css/app.css" />
+</head>
+<body>
+    <div class="absolute-fill-container shell-wrapper">
+        <div class="shell-header-wrapper">
+            <div class="shell-header-container" >
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <span class="brand" data-bind="text: appTitle"></span>
+                        <div class="btn-group pull-right">
+                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Links...<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="http://openseadragon.github.io/">OpenSeadragon</a></li>
+                                <li><a href="https://github.com/msalsbery/OpenSeadragonImagingHelper">OpenSeadragonImagingHelper</a></li>
+                                <li><a href="https://github.com/msalsbery/OpenSeadragonViewerInputHook">OpenSeadragonViewerInputHook</a></li>
+                                <li><a href="https://github.com/msalsbery/OpenSeadragonAnnoHost">OpenSeadragonAnnoHost</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shell-view-wrapper" >
+            <div class="absolute-fill-container view-container" >
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <div class="navbar-inner output-container" data-bind="with: outputVM" >
+                                <div class="propheadercontainer">
+                                    <span class="propheadertext">Image</span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Image Width:</span><span data-bind="text: haveImage() ? imgWidth().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Image Height:</span><span data-bind="text: haveImage() ? imgHeight().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Image Aspect Ratio (w/h):</span><span data-bind="text: haveImage() ? imgAspectRatio().toFixed(4) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Min Zoom Factor:</span><span data-bind="text: haveImage() ? minZoom().toFixed(4) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Max Zoom Factor:</span><span data-bind="text: haveImage() ? maxZoom().toFixed(4) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propheadercontainer">
+                                    <span class="propheadertext">Zoom and Pan</span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>zoomFactor:</span><span data-bind="text: haveImage() ? zoomFactor().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportWidth:</span><span data-bind="text: haveImage() ? viewportWidth().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportHeight:</span><span data-bind="text: haveImage() ? viewportHeight().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportOrigin.x:</span><span data-bind="text: haveImage() ? viewportOriginX().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportOrigin.y:</span><span data-bind="text: haveImage() ? viewportOriginY().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportCenter.x:</span><span data-bind="text: haveImage() ? viewportCenterX().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>_viewportCenter.y:</span><span data-bind="text: haveImage() ? viewportCenterY().toFixed( 4 ) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propheadercontainer">
+                                    <span class="propheadertext">Cursor Coordinates</span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Mouse X:</span><span data-bind="text: (haveImage() && haveMouse()) ? mousePositionX().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Mouse Y:</span><span data-bind="text: (haveImage() && haveMouse()) ? mousePositionY().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Element X:</span><span data-bind="text: (haveImage() && haveMouse()) ? elementOffsetX().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Element Y:</span><span data-bind="text: (haveImage() && haveMouse()) ? elementOffsetY().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Mouse Relative X:</span><span data-bind="text: (haveImage() && haveMouse()) ? mouseRelativeX().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                                <div class="propcontainer">
+                                    <span>Mouse Relative Y:</span><span data-bind="text: (haveImage() && haveMouse()) ? mouseRelativeY().toFixed(0) : '-'" class="propvaluetext"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span9">
+                            <div class="navbar-inner viewer-container" >
+                                <div class="relative-fill-container" >
+                                    <div id="viewerDiv1" class="absolute-fill-container openseadragon1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shell-footer-wrapper">
+            <div class="shell-footer-container" >
+                <span class="shell-footer-text pull-right">Mark Salsbery - © 2013</span>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src='scripts/viewmodel.js'></script>
+</body>
+</html>
