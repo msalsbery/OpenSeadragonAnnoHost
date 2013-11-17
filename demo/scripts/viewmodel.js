@@ -1,5 +1,72 @@
 (function() {
 
+//    function BaseClass()
+//    {
+//        var _x = 321;
+
+//        this._map = {};
+
+//        Object.defineProperties(this, {
+//            baseDataProperty: {
+//                value: 123,
+//                writable: true,
+//                enumerable: true,
+//                configurable: true
+//            },
+//            baseAccessorProperty: {
+//                set: function (x) {
+//                    _x = x;
+//                },
+//                get: function () {
+//                    return _x;
+//                },
+//                enumerable: true,
+//                configurable: true
+//            }
+//        });
+//    };
+
+//    BaseClass.prototype.parseXML = function( key, value )
+//    {
+//        OpenSeadragon.console.log('BaseClass::parseXML()');
+//        this._map[key] = value;
+//    }
+
+//    function ChildClass()
+//    {
+//        BaseClass.call(this);
+
+//        // data descriptor
+//        Object.defineProperty(this, 'childDataProperty', {value : 37,
+//                                       writable : true,
+//                                       enumerable : true,
+//                                       configurable : true});
+
+//        // accessor descriptor
+//        var bValue;
+//        Object.defineProperty(this, 'childAccessorProperty', {get : function(){ return bValue; },
+//                                       set : function(newValue){ bValue = newValue; },
+//                                       enumerable : true,
+//                                       configurable : true});
+
+//    }
+
+//    ChildClass.prototype = Object.create(BaseClass.prototype);
+//    Object.defineProperty(ChildClass.prototype, 'constructor', {enumerable: false, value: ChildClass});
+
+//    ChildClass.prototype.parseXML = function( key, value, otherData )
+//    {
+//        OpenSeadragon.console.log('ChildClass()::parseXML()\n');
+//        BaseClass.prototype.parseXML.call(this, key, value);
+//    }
+
+//    var a = new ChildClass();
+//    var b = new ChildClass();
+//    for (var i in a) {    
+//      OpenSeadragon.console.log(i);
+//    }
+//*************************************************************************************************
+
     var appTitle = 'OpenSeadragonAnnoHost Demo';
 
     $(window).resize(onWindowResize);
@@ -12,7 +79,8 @@
     }] );
 
     var viewer = OpenSeadragon({
-                     //debugMode: true,
+                     debugMode: true,
+                     //showReferenceStrip:  true,
                      id: "viewerDiv1",
                      prefixUrl: "content/images/openseadragon/",
                      useCanvas: true,
@@ -24,11 +92,12 @@
                      zoomPerClick: 1.4,
                      tileSources: ["data/testpattern.dzi", "data/tall.dzi", "data/wide.dzi", tileSource]
                  }),
-        imagingHelper = viewer.activateImagingHelper({viewChangedHandler: onImageViewChanged}),
-        viewerInputHook = viewer.addViewerInputHook({dragHandler: onOSDCanvasDrag, 
-                                                     moveHandler: onOSDCanvasMove,
-                                                     scrollHandler: onOSDCanvasScroll,
-                                                     clickHandler: onOSDCanvasClick}),
+        imagingHelper = viewer.activateImagingHelper({onImageViewChanged: onImageViewChanged}),
+        testTracker = new OpenSeadragon.MouseTracker({element: viewer.container}).setTracking(true),
+        viewerInputHook = viewer.addViewerInputHook({hooks: [
+            {tracker: 'viewer', handler: 'scrollHandler', hookHandler: onHookOsdViewerScroll},
+            {tracker: 'viewer', handler: 'clickHandler', hookHandler: onHookOsdViewerClick}
+        ]}),
         annoHost = viewer.activateAnnoHost({}),
         $osdCanvas = null;
 
@@ -36,34 +105,31 @@
         $osdCanvas = $(viewer.canvas);
         setMinMaxZoomForImage();
         outputVM.haveImage(true);
-        $osdCanvas.on('mouseenter.osdimaginghelper', onOSDCanvasMouseEnter);
-        $osdCanvas.on('mousemove.osdimaginghelper', onOSDCanvasMouseMove);
-        $osdCanvas.on('mouseleave.osdimaginghelper', onOSDCanvasMouseLeave);
+        $osdCanvas.on('mouseenter.osdimaginghelper', onOsdCanvasMouseEnter);
+        $osdCanvas.on('mousemove.osdimaginghelper', onOsdCanvasMouseMove);
+        $osdCanvas.on('mouseleave.osdimaginghelper', onOsdCanvasMouseLeave);
         updateImageVM();
         updateImgViewerViewVM();
     });
 
     viewer.addHandler('close', function (event) {
         outputVM.haveImage(false);
-        $osdCanvas.off('mouseenter.osdimaginghelper', onOSDCanvasMouseEnter);
-        $osdCanvas.off('mousemove.osdimaginghelper', onOSDCanvasMouseMove);
-        $osdCanvas.off('mouseleave.osdimaginghelper', onOSDCanvasMouseLeave);
+        $osdCanvas.off('mouseenter.osdimaginghelper', onOsdCanvasMouseEnter);
+        $osdCanvas.off('mousemove.osdimaginghelper', onOsdCanvasMouseMove);
+        $osdCanvas.off('mouseleave.osdimaginghelper', onOsdCanvasMouseLeave);
         $osdCanvas = null;
     });
 
-    // Override OpenSeadragon.Viewer.setFullPage() to remove our knockout-bound elements before a switch to full-page
-    //  (temporary fix until there's a 'pre-full-page' event in OpenSeadragon)
-    var viewerSetFullPage = OpenSeadragon.Viewer.prototype.setFullPage;
-    OpenSeadragon.Viewer.prototype.setFullPage = function (fullPage) {
-        if (fullPage) {
+    viewer.addHandler('pre-full-page', function (event) {
+        // set event.preventDefaultAction = true to prevent viewer's default action
+        if (event.fullPage) {
             // Going to full-page mode...remove our bound DOM elements
             vm.outputVM(null);
         }
-        viewerSetFullPage.call(viewer, fullPage);
-    }
+    });
 
-    viewer.addHandler('fullpage', function (event) {
-        if (!event.fullpage) {
+    viewer.addHandler('full-page', function (event) {
+        if (!event.fullPage) {
             // Exited full-page mode...restore our bound DOM elements
             vm.outputVM(outputVM);
         }
@@ -88,23 +154,7 @@
         updateImgViewerViewVM();
     }
 
-    function onOSDCanvasDrag(event) {
-        // set event.stopHandlers = true to prevent any more handlers in the chain from being called
-        // set event.stopBubbling = true to prevent the original event from bubbling
-        // set event.preventDefaultAction = true to prevent viewer's default action
-        event.stopBubbling = true;
-    }
-
-    function onOSDCanvasMove(event) {
-        // set event.stopHandlers = true to prevent any more handlers in the chain from being called
-        // set event.stopBubbling = true to prevent the original event from bubbling
-        // set event.preventDefaultAction = true to prevent viewer's default action
-        event.stopHandlers = true;
-        event.stopBubbling = true;
-        event.preventDefaultAction = true;
-    }
-
-    function onOSDCanvasScroll(event) {
+    function onHookOsdViewerScroll(event) {
         // set event.stopHandlers = true to prevent any more handlers in the chain from being called
         // set event.stopBubbling = true to prevent the original event from bubbling
         // set event.preventDefaultAction = true to prevent viewer's default action
@@ -119,7 +169,7 @@
         event.preventDefaultAction = true;
     }
 
-    function onOSDCanvasClick(event) {
+    function onHookOsdViewerClick(event) {
         // set event.stopHandlers = true to prevent any more handlers in the chain from being called
         // set event.stopBubbling = true to prevent the original event from bubbling
         // set event.preventDefaultAction = true to prevent viewer's default action
@@ -136,11 +186,11 @@
         event.preventDefaultAction = true;
     }
 
-    function onOSDCanvasMouseEnter(event) {
+    function onOsdCanvasMouseEnter(event) {
         outputVM.haveMouse(true);
     }
 
-    function onOSDCanvasMouseMove(event) {
+    function onOsdCanvasMouseMove(event) {
         var offset = $osdCanvas.offset();
         outputVM.mousePositionX(event.pageX);
         outputVM.mousePositionY(event.pageY);
@@ -150,7 +200,7 @@
         outputVM.mouseRelativeY(event.pageY - offset.top);
     }
 
-    function onOSDCanvasMouseLeave(event) {
+    function onOsdCanvasMouseLeave(event) {
         outputVM.haveMouse(false);
     }
 

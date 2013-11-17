@@ -9,17 +9,16 @@
     grunt.loadNpmTasks('grunt-jsdoc');
 
     var packageJson = grunt.file.readJSON("package.json"),
-        //srcName = 'openseadragon-annohost.js',
         distributionName = 'openseadragon-annohost.js',
         minifiedName = 'openseadragon-annohost.min.js',
         srcDir = 'src/',
         buildDir = 'build/',
         docsDir = 'docs/',
         demoScriptsDir = 'demo/scripts/',
-        //src = srcDir + srcName,
         distribution = buildDir + distributionName,
         minified = buildDir + minifiedName,
         sources = [
+            srcDir + 'polyfills.js',
             srcDir + 'annohost.js'
         ];
 
@@ -46,7 +45,6 @@
             },
             beforeconcat: sources,
             afterconcat: [distribution]
-            //files: [src]
         },
         concat: {
             options: {

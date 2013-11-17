@@ -21,8 +21,9 @@
 
 
 /**
+ * The OpenSeadragon namespace
  * @external OpenSeadragon
- * @see {@link http://openseadragon.github.io/docs/symbols/OpenSeadragon.html OpenSeadragon.Viewer Documentation}
+ * @see {@link http://openseadragon.github.io/docs/symbols/OpenSeadragon.html OpenSeadragon Documentation}
  */
 
 /**
@@ -37,27 +38,37 @@
 
 /**
  * @external "OpenSeadragon.Point"
- * @see {@link http://openseadragon.github.io/docs/symbols/OpenSeadragon.Point.html OpenSeadragon.EventSource Documentation}
+ * @see {@link http://openseadragon.github.io/docs/symbols/OpenSeadragon.Point.html OpenSeadragon.Point Documentation}
+ * @property {Number} x
+ * @property {Number} y
  */
 
 /**
- * @namespace OpenSeadragon
- * @extends external:OpenSeadragon
+ * @external "OpenSeadragon.Rect"
+ * @see {@link http://openseadragon.github.io/docs/symbols/OpenSeadragon.Rect.html OpenSeadragon.Rect Documentation}
+ * @property {Number} x
+ * @property {Number} y
+ * @property {Number} width
+ * @property {Number} height
  */
-(function($) {
+
+/**
+ * @namespace Annotations
+ * @memberof external:OpenSeadragon
+ */
+(function(OSD, $, undefined) {
 
     /**
      * Event handler method signature used by all OpenSeadragon events.
      *
-     * @callback eventHandler
-     * @memberof OpenSeadragon
-     * @param {object} event - See individual events for event properties passed.
+     * @callback EventHandler
+     * @memberof external:OpenSeadragon
+     * @param {Object} event - See individual events for event properties passed.
      */
 
     /**
      *
-     * @class OpenSeadragon.Viewer
-     * @memberof OpenSeadragon
+     * @class external:OpenSeadragon.Viewer
      * @extends external:"OpenSeadragon.Viewer"
      *
      **/
@@ -65,13 +76,14 @@
     /**
      * Creates a new AnnoHost attached to the viewer.
      *
-     * @memberof OpenSeadragon.Viewer
-     * @method OpenSeadragon.Viewer#activateAnnoHost
+     * @method activateAnnoHost
+     * @memberof external:OpenSeadragon.Viewer#
      * @param {Object} options
-     * @param {OpenSeadragon.eventHandler} [options.viewChangedHandler] - {@link OpenSeadragon.AnnoHost.event:image-view-changed} handler method.
+     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link external:OpenSeadragon.Annotations.AnnoHost.event:image-view-changed} handler method.
+     * @returns {external:OpenSeadragon.Annotations.AnnoHost}
      *
      **/
-    $.Viewer.prototype.activateAnnoHost = function(options) {
+    OSD.Viewer.prototype.activateAnnoHost = function(options) {
         if (!this.annoHost) {
             options = options || {};
             options.viewer = this;
@@ -84,21 +96,21 @@
      * Creates a new AnnoHost attached to the viewer instance passed in the options parameter.
      *
      * @class AnnoHost
-     * @classdesc Provides imaging helper methods and properties for the OpenSeadragon viewer.
-     * @memberof OpenSeadragon
+     * @classdesc Provides a framework for annotating OpenSeadragon images.
+     * @memberof external:OpenSeadragon.Annotations
      * @extends external:"OpenSeadragon.EventSource"
      * @param {Object} options
      * @param {external:"OpenSeadragon.Viewer"} options.viewer - Required! Reference to OpenSeadragon viewer to attach to.
-     * @param {OpenSeadragon.eventHandler} [options.viewChangedHandler] - {@link OpenSeadragon.AnnoHost.event:image-view-changed} handler method.
+     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link external:OpenSeadragon.Annotations.AnnoHost.event:image-view-changed} handler method.
      *
      **/
     $.AnnoHost = function(options) {
         options = options || {};
 
-        if (typeof($.Viewer.prototype.activateImagingHelper) !== 'function') {
+        if (typeof(OSD.Viewer.prototype.activateImagingHelper) !== 'function') {
             throw new Error('Requires the OpenSeadragonImagingHelper plugin.');
         }
-        if (typeof($.Viewer.prototype.addViewerInputHook) !== 'function') {
+        if (typeof(OSD.Viewer.prototype.addViewerInputHook) !== 'function') {
             throw new Error('Requires the OpenSeadragonViewerInputHook plugin.');
         }
         if (!options.viewer) {
@@ -108,61 +120,129 @@
             throw new Error('Viewer already has an AnnoHost.');
         }
 
-        options.viewer.annoHost = this;
+        OSD.EventSource.call(this);
+        
+        this.viewer = options.viewer;
+        this.viewer.annoHost = this;
 
         /**
          * A reference to the options passed at creation.
          * @member {object} options
-         * @memberof OpenSeadragon.AnnoHost#
+         * @memberof external:OpenSeadragon.Annotations.AnnoHost#
          * @property {external:"OpenSeadragon.Viewer"} viewer - Reference to OpenSeadragon viewer this AnnoHost is attached to.
-         * @property {OpenSeadragon.eventHandler} [viewChangedHandler] - {@link OpenSeadragon.AnnoHost.event:image-view-changed} handler method.
+         * @property {external:OpenSeadragon.EventHandler} [onImageViewChanged] - {@link external:OpenSeadragon.Annotations.AnnoHost.event:image-view-changed} handler method.
          */
         this.options = options;
 
         // TODO Scope these private
 
-        this._viewer = options.viewer;
         this._haveImage = false;
         this._osdCanvas = null;
+        this._imagingHelper = this.viewer.imagingHelper ? this.viewer.imagingHelper : this.viewer.activateImagingHelper({});
 
-        $.EventSource.call(this);
-        
-        //if (options.viewChangedHandler) {
-        //    this.addHandler('image-view-changed', options.viewChangedHandler);
-        //}
+        this._imagingHelper.addHandler('image-view-changed', OSD.delegate(this, this.onImageViewChanged));
+        this._viewerInputHook = this.viewer.addViewerInputHook({hooks: [
+            {tracker: 'viewer', handler: 'dragHandler',   hookHandler: OSD.delegate(this, this.onHookViewerDrag)},
+            {tracker: 'viewer', handler: 'enterHandler',  hookHandler: OSD.delegate(this, this.onHookViewerEnter)},
+            {tracker: 'viewer', handler: 'moveHandler',   hookHandler: OSD.delegate(this, this.onHookViewerMove)},
+            {tracker: 'viewer', handler: 'exitHandler',   hookHandler: OSD.delegate(this, this.onHookViewerExit)},
+            {tracker: 'viewer', handler: 'scrollHandler', hookHandler: OSD.delegate(this, this.onHookViewerScroll)},
+            {tracker: 'viewer', handler: 'clickHandler',  hookHandler: OSD.delegate(this, this.onHookViewerClick)}
+        ]});
+        this.viewer.addHandler("open", OSD.delegate(this, this.onOpen));
+        this.viewer.addHandler("close", OSD.delegate(this, this.onClose));
+        this.viewer.addHandler("pre-full-page", OSD.delegate(this, this.onPreFullPage));
+        this.viewer.addHandler("full-page", OSD.delegate(this, this.onFullPage));
 
-        this._viewer.addHandler("open", $.delegate(this, this.onOpen));
-        this._viewer.addHandler("close", $.delegate(this, this.onClose));
-        this._viewer.addHandler("fullpage", $.delegate(this, this.onFullPage));
     };
 
-    $.extend($.AnnoHost.prototype, $.EventSource.prototype,
-    /** @lends OpenSeadragon.AnnoHost.prototype */
+    OSD.extend($.AnnoHost.prototype, OSD.EventSource.prototype,
+    /** @lends external:OpenSeadragon.Annotations.AnnoHost.prototype */
     {
-        /***
-         * Raised whenever the viewer's zoom or pan changes and the AnnoHost's properties have been updated.
+        /**
+         * Raised whenever the viewer's zoom or pan changes and the ImagingHelper's properties have been updated.
          *
          * @event image-view-changed
-         * @memberof OpenSeadragon.AnnoHost
+         * @memberof external:OpenSeadragon.Annotations.AnnoHost
          * @type {object}
-         * @property {OpenSeadragon.AnnoHost} eventSource - A reference to the AnnoHost which raised the event.
+         * @property {external:OpenSeadragon.Annotations.AnnoHost} eventSource - A reference to the ImagingHelper which raised the event.
          * @property {number} viewportWidth - Width of viewport in logical coordinates.
          * @property {number} viewportHeight - Height of viewport in logical coordinates.
          * @property {external:"OpenSeadragon.Point"} viewportCenter - Center of viewport in logical coordinates.
+         * @property {Object} [userData=null] - Arbitrary subscriber-defined object.
          */
 
+        /**
+         * @method
+         *
+         **/
         onOpen: function() {
             this._haveImage = true;
-            this._osdCanvas = this._viewer.canvas;
+            this._osdCanvas = this.viewer.canvas;
         },
 
         onClose: function() {
             this._haveImage = false;
+            this._osdCanvas = null;
         },
 
-        onFullPage: function() {
+        onPreFullPage: function(event) {
+            // set event.preventDefaultAction = true to prevent viewer's default action
+            if (event.fullPage) {
+                // Going to full-page mode
+            }
+        },
+
+        onFullPage: function(event) {
+            if (!event.fullPage) {
+                // Exited full-page mode
+            }
+        },
+
+        onImageViewChanged: function () {
+            // event.viewportWidth == width of viewer viewport in logical coordinates relative to image native size
+            // event.viewportHeight == height of viewer viewport in logical coordinates relative to image native size
+            // event.viewportOrigin == OpenSeadragon.Point, top-left of the viewer viewport in logical coordinates relative to image
+            // event.viewportCenter == OpenSeadragon.Point, center of the viewer viewport in logical coordinates relative to image
+            // event.zoomFactor == current zoom factor
+        },
+
+        onHookViewerDrag: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
+        },
+
+        onHookViewerEnter: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
+        },
+
+        onHookViewerMove: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
+        },
+
+        onHookViewerExit: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
+        },
+
+        onHookViewerScroll: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
+        },
+
+        onHookViewerClick: function () {
+            // set event.stopHandlers = true to prevent any more handlers in the chain from being called
+            // set event.stopBubbling = true to prevent the original event from bubbling
+            // set event.preventDefaultAction = true to prevent viewer's default action
         }
 
     });
 
-}(OpenSeadragon));
+}(OpenSeadragon, OpenSeadragon.Annotations = OpenSeadragon.Annotations || {}));
