@@ -14,16 +14,23 @@
         srcDir = 'src/',
         buildDir = 'build/',
         docsDir = 'docs/',
-        demoScriptsDir = 'demo/scripts/',
+        publishDir = '../msalsbery.github.io/builds/',
         distribution = buildDir + distributionName,
         minified = buildDir + minifiedName,
         sources = [
-            srcDir + 'polyfills.js',
-            srcDir + 'annohost.js'
+            //srcDir + 'polyfills.js',
+            srcDir + 'annohost.js',
+            srcDir + 'annotation.js',
         ];
 
     grunt.initConfig({
         pkg: packageJson,
+        annohostVersion: {
+            versionStr: packageJson.version,
+            major:      parseInt(packageJson.version.split('.')[0], 10),
+            minor:      parseInt(packageJson.version.split('.')[1], 10),
+            revision:   parseInt(packageJson.version.split('.')[2], 10)
+        },
         "git-describe": {
             build: {
                 options: {
@@ -90,8 +97,8 @@
 
     // Copies built source to demo site folder
     grunt.registerTask('publish', function() {
-        grunt.file.copy(distribution, demoScriptsDir + distributionName);
-        grunt.file.copy(minified, demoScriptsDir + minifiedName);
+        grunt.file.copy(distribution, publishDir + distributionName);
+        grunt.file.copy(minified, publishDir + minifiedName);
     });
 
     // Build task(s).
