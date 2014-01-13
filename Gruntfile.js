@@ -9,14 +9,16 @@
     grunt.loadNpmTasks('grunt-jsdoc');
 
     var packageJson = grunt.file.readJSON("package.json"),
+        docsGlobals = '../OpenSeadragonImaging/docs/docs-globals.js',
         distributionName = 'openseadragon-annohost.js',
         minifiedName = 'openseadragon-annohost.min.js',
         srcDir = 'src/',
         buildDir = 'build/',
-        docsDir = 'docs/',
+        builtDir = buildDir + 'openseadragonannohost/',
+        docsDir = buildDir + 'docs/',
         publishDir = '../msalsbery.github.io/builds/',
-        distribution = buildDir + distributionName,
-        minified = buildDir + minifiedName,
+        distribution = builtDir + distributionName,
+        minified = builtDir + minifiedName,
         sources = [
             //srcDir + 'polyfills.js',
             srcDir + 'annohost.js',
@@ -40,7 +42,7 @@
         },
         clean: {
             build: {
-                src: [buildDir]
+                src: [builtDir]
             },
             doc: {
                 src: [docsDir]
@@ -85,9 +87,9 @@
         },
         jsdoc : {
             dist : {
-                src: [distribution, 'README.md'], 
+                src: [docsGlobals, distribution],//, 'README.md'
                 options: {
-                    destination: 'docs',
+                    destination: docsDir,
                     //template: "node_modules/docstrap/template",
                     configure: 'doc-conf.json'
                 }

@@ -1,6 +1,6 @@
 ﻿{
   "name": "OpenSeadragonAnnoHost",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "OpenSeadragon plugin which provides a framework for annotating images.",
   "devDependencies": {
     "grunt": "~0.4.1",

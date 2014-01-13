@@ -121,29 +121,35 @@
     $(window).resize(onWindowResize);
     $(window).resize();
 
-    var tileSource = new OpenSeadragon.LegacyTileSource( [{
-        url: 'data/dog_radiograph_2.jpg',
-        width: 1909,
-        height: 1331
-    }] );
-
-    var tileSources = [
+    //var tileSourcesPrefix = '../openseadragonimaging/data/',
+    var tileSourcesPrefix = '/media/openseadragonsamples/',
+        tileSources = [
+            //{Image: {
+            //    xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
+            //    Url:      "http://d30di63yu732af.cloudfront.net/00611501_files/",
+            //    Format:   "jpg", 
+            //    Overlap:  "1",
+            //    TileSize: "256",
+            //    Size: {
+            //        Height: "3205",
+            //        Width:   "4358"
+            //    }
+            //}},
         new OpenSeadragon.LegacyTileSource( [{
-            url: 'data/dog_radiograph_2.jpg',
-            width: 1909,
-            height: 1331
-        }] ),
-        'data/testpattern.dzi',
-        'data/tall.dzi',
-        'data/wide.dzi'
-    ];
+                url: tileSourcesPrefix + 'dog_radiograph_2.jpg',
+                width: 1909,
+                height: 1331
+            }] ),
+            tileSourcesPrefix + 'testpattern.dzi',
+            tileSourcesPrefix + 'tall.dzi',
+            tileSourcesPrefix + 'wide.dzi'
+        ];
 
     var _navExpanderIsCollapsed = true,
         _$navExpander = $('.navigatorExpander'),
         _$navExpanderHeaderContainer = $('.expanderHeaderContainer'),
         _$navExpanderHeader = $(_$navExpanderHeaderContainer.children()[0]),
         _$navExpanderContentContainer = $('.expanderContentContainer'),
-        _$navExpanderContent = $(_$navExpanderContentContainer.children()[0]),
         _navExpanderExpandedOpacity = 1.0,
         _navExpanderCollapsedOpacity = 0.40,
         _navExpanderWidth = 190,
@@ -195,17 +201,6 @@
         $osdCanvas.on('mouseleave.osdimaginghelper', onOsdCanvasMouseLeave);
         updateImageVM();
         updateImgViewerViewVM();
-
-        if (viewer.navigator && viewer.navigator.element) {
-            (function( style, borderWidth ){
-                style.margin        = '0px';
-                style.padding       = '0px';
-                style.border        = '';
-                style.background    = '#ffffff'; //#000
-                style.opacity       = 1.0;       //0.8
-                style.overflow      = 'visible';
-            }( viewer.navigator.element.style));
-        }
 
         _$navExpander.css( 'visibility', 'visible');
         if (_navExpanderIsCollapsed) {
@@ -440,8 +435,6 @@
         var newheight = wrapperheight - headerheight;
         _$navExpanderContentContainer.width(wrapperwidth);
         _$navExpanderContentContainer.height(newheight);
-        _$navExpanderContent.width(wrapperwidth);
-        _$navExpanderContent.height(newheight);
         viewer.navigator.updateSize();
         viewer.navigator.update(viewer.viewport);
     }

@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2013 Mark Salsbery
+ * Copyright (c) 2013-2014 Mark Salsbery
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,10 +20,6 @@
  */
 
 
-/***
- * @namespace Annotations
- * @memberof external:OpenSeadragon
- */
 (function(OSD, $, undefined) {
 
     /**
@@ -31,7 +27,7 @@
      *
      * @class Annotation
      * @classdesc Base class for all annotations.
-     * @memberof external:OpenSeadragon.Annotations
+     * @memberof OpenSeadragonImaging
      * @param {Object} options
      *
      **/
@@ -42,7 +38,7 @@
     };
 
     OSD.extend($.Annotation.prototype,
-    /** @lends external:OpenSeadragon.Annotations.Annotation.prototype */
+    /** @lends OpenSeadragonImaging.Annotation.prototype */
     {
 
     });
@@ -57,4 +53,4 @@
     //}
 
 
-}(OpenSeadragon, OpenSeadragon.Annotations = OpenSeadragon.Annotations || {}));
+}(OpenSeadragon, window.OpenSeadragonImaging = window.OpenSeadragonImaging || {}));

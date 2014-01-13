@@ -2,28 +2,20 @@
     "tags": {
         "allowUnknownTags": true
     },
-    "plugins" : ["plugins/markdown"],
+    "plugins" : [],
     "templates" : {
-        "cleverLinks" : false,
+        "cleverLinks" : true,
         "monospaceLinks" : false,
         "default" : {
-            "outputSourceFiles" : false
+            "outputSourceFiles" : true
         },
-        "systemName" : "OpenSeadragonAnnoHost",
-        "footer" : "",
-        "copyright" : "OpenSeadragonAnnoHost Copyright © 2013 Mark Salsbery",
-        "navType" : "vertical",
-        "theme" : "cosmo",
-        "linenums" : true,
-        "collapseSymbols" : false,
-        "inverseNav" : false
-    },
-    "markdown" : {
-            "parser" : "gfm",
-            "hardwrap" : true,
-            "githubRepoName" : "OpenSeadragonAnnoHost",
-            "githubRepoOwner" : "msalsbery"
+        "openseadragonimaging" : {
+            "logMode" : false,
+            "debugMode" : false,
+            "useHighlightJs" : true
+        }
     },
     "opts": {
+        "template": "../OpenSeadragonImaging/docs/templates/openseadragonimaging"
     }
 }

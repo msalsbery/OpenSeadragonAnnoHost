@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2013 Mark Salsbery
+ * Copyright (c) 2013-2014 Mark Salsbery
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -20,49 +20,20 @@
  */
 
 
-/*** @module openseadragon-annohost */
-
 /**
- * The OpenSeadragon namespace
- * @external OpenSeadragon
- * @see {@link http://openseadragon.github.io/docs/OpenSeadragon.html OpenSeadragon Documentation}
+ * @file
+ * @version  <%= pkg.name %> <%= pkg.version %>
+ * @author Mark Salsbery <msalsbery@hotmail.com>
+ *
  */
 
 /**
- * @external "OpenSeadragon.Viewer"
- * @see {@link http://openseadragon.github.io/docs/OpenSeadragon.Viewer.html OpenSeadragon.Viewer Documentation}
+ * @module openseadragon-annohost
+ * @version  <%= pkg.name %> <%= pkg.version %>
+ *
  */
 
-/**
- * @external "OpenSeadragon.EventSource"
- * @see {@link http://openseadragon.github.io/docs/OpenSeadragon.EventHandler.html OpenSeadragon.EventSource Documentation}
- */
 
-/**
- * @external "OpenSeadragon.Point"
- * @see {@link http://openseadragon.github.io/docs/OpenSeadragon.Point.html OpenSeadragon.Point Documentation}
- * @property {Number} x
- * @property {Number} y
- */
-
-/**
- * @external "OpenSeadragon.Rect"
- * @see {@link http://openseadragon.github.io/docs/OpenSeadragon.Rect.html OpenSeadragon.Rect Documentation}
- * @property {Number} x
- * @property {Number} y
- * @property {Number} width
- * @property {Number} height
- */
-
-/**
- * @external "OpenSeadragon.ImagingHelper"
- * @see {@link http://msalsbery.github.io/openseadragonimaginghelper/docs/index.html OpenSeadragon.ImagingHelper Documentation}
- */
-
-/**
- * @namespace Annotations
- * @memberof external:OpenSeadragon
- */
 (function(OSD, $, undefined) {
 
     if (!OSD.version || OSD.version.major < 1) {
@@ -70,28 +41,13 @@
     }
 
     /**
-     * Event handler method signature used by all OpenSeadragon events.
-     *
-     * @callback EventHandler
-     * @memberof external:OpenSeadragon
-     * @param {Object} event - See individual events for event properties passed.
-     */
-
-    /**
-     *
-     * @class external:OpenSeadragon.Viewer
-     * @extends external:"OpenSeadragon.Viewer"
-     *
-     **/
-
-    /**
      * Creates a new AnnoHost attached to the viewer.
      *
      * @method activateAnnoHost
-     * @memberof external:OpenSeadragon.Viewer#
+     * @memberof external:"OpenSeadragon.Viewer"#
      * @param {Object} options
-     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - image-view-changed handler method.
-     * @returns {external:OpenSeadragon.Annotations.AnnoHost}
+     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link OpenSeadragonImaging.ImagingHelper.event:image-view-changed} handler method.
+     * @returns {OpenSeadragonImaging.AnnoHost}
      *
      **/
     OSD.Viewer.prototype.activateAnnoHost = function(options) {
@@ -108,11 +64,11 @@
      *
      * @class AnnoHost
      * @classdesc Provides a framework for annotating OpenSeadragon images.
-     * @memberof external:OpenSeadragon.Annotations
-     * @extends external:"OpenSeadragon.ImagingHelper"
+     * @memberof OpenSeadragonImaging
+     * @extends OpenSeadragonImaging.ImagingHelper
      * @param {Object} options
      * @param {external:"OpenSeadragon.Viewer"} options.viewer - Required! Reference to OpenSeadragon viewer to attach to.
-     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link external:OpenSeadragon.ImagingHelper.event:image-view-changed} handler method.
+     * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link OpenSeadragonImaging.ImagingHelper.event:image-view-changed} handler method.
      *
      **/
     $.AnnoHost = function(options) {
@@ -121,13 +77,13 @@
         if (typeof(OSD.Viewer.prototype.activateImagingHelper) !== 'function') {
             throw new Error('OpenSeadragon.Annotations.AnnoHost requires the OpenSeadragonImagingHelper plugin.');
         }
-        if (!OSD.ImagingHelper.version || OSD.ImagingHelper.version.major < 1) {
+        if (!$.ImagingHelper.version || $.ImagingHelper.version.major < 1) {
             throw new Error('OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonImagingHelper plugin version 1.0.0+');
         }
         if (typeof(OSD.Viewer.prototype.addViewerInputHook) !== 'function') {
             throw new Error('OpenSeadragon.Annotations.AnnoHost requires the OpenSeadragonViewerInputHook plugin.');
         }
-        if (!OSD.ViewerInputHook.version || OSD.ViewerInputHook.version.major < 1) {
+        if (!$.ViewerInputHook.version || $.ViewerInputHook.version.major < 1) {
             throw new Error('OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonViewerInputHook plugin version 1.0.0+');
         }
         if (!options.viewer) {
@@ -138,7 +94,7 @@
         }
 
         // Call base class constructor
-        OSD.ImagingHelper.call(this, options);
+        $.ImagingHelper.call(this, options);
 
         // Add this object to the Viewer        
         this._viewer.annoHost = this;
@@ -168,7 +124,7 @@
 
     /**
      * AnnoHost version.
-     * @member {Object} external:OpenSeadragon.Annotations.AnnoHost.version
+     * @member {Object} OpenSeadragonImaging.AnnoHost.version
      * @property {String} versionStr - The version number as a string ('major.minor.revision').
      * @property {Number} major - The major version number.
      * @property {Number} minor - The minor version number.
@@ -184,8 +140,8 @@
     /* jshint ignore:end */
 
 
-    // Inherit OpenSeadragon.ImagingHelper
-    $.AnnoHost.prototype = Object.create(OSD.ImagingHelper.prototype);
+    // Inherit OpenSeadragonImaging.ImagingHelper
+    $.AnnoHost.prototype = Object.create($.ImagingHelper.prototype);
     Object.defineProperty($.AnnoHost.prototype, 'constructor', {enumerable: false, value: $.AnnoHost});
 
 
@@ -195,7 +151,7 @@
         /**
          * Gets the image's native width in pixels.
          * @member {Number} dataWidth
-         * @memberof external:OpenSeadragon.Annotations.AnnoHost#
+         * @memberof OpenSeadragonImaging.AnnoHost#
          *
          **/
         dataWidth: {
@@ -208,7 +164,7 @@
         /**
          * Gets the image's native height in pixels.
          * @member {Number} dataHeight
-         * @memberof external:OpenSeadragon.Annotations.AnnoHost#
+         * @memberof OpenSeadragonImaging.AnnoHost#
          *
          **/
         dataHeight: {
@@ -221,7 +177,7 @@
         /**
          * Gets the dimensions of annotation UI grapples in pixels.
          * @member {Number} annotationGrappleWidth
-         * @memberof external:OpenSeadragon.Annotations.AnnoHost#
+         * @memberof OpenSeadragonImaging.AnnoHost#
          *
          **/
         annotationGrappleWidth: {
@@ -236,7 +192,7 @@
 
     // Methods
     OSD.extend($.AnnoHost.prototype,
-    /** @lends external:OpenSeadragon.Annotations.AnnoHost.prototype */
+    /** @lends OpenSeadragonImaging.AnnoHost.prototype */
     {
         /**
          * TEST.
@@ -251,7 +207,7 @@
         /**
          * Called by Annotation objects when editing starts.
          * @method
-         * @param {external:OpenSeadragon.Annotations.Annotation} annotation
+         * @param {OpenSeadragonImaging.Annotation} annotation
          *
          **/
         notifyAnnotationTrackingEditStarted: function (annotation) {
@@ -409,4 +365,4 @@
     }
 
 
-}(OpenSeadragon, OpenSeadragon.Annotations = OpenSeadragon.Annotations || {}));
+}(OpenSeadragon, window.OpenSeadragonImaging = window.OpenSeadragonImaging || {}));
