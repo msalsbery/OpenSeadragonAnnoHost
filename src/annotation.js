@@ -1,4 +1,4 @@
-﻿/* 
+/*
  * Copyright (c) 2013-2014 Mark Salsbery
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,38 +19,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/* global OpenSeadragon */
 
-(function(OSD, $, undefined) {
+(function (OSD, $, undefined) {
+	/**
+	 * Base class for all annotations.
+	 *
+	 * @class Annotation
+	 * @classdesc Base class for all annotations.
+	 * @memberof OpenSeadragonImaging
+	 * @param {Object} options
+	 *
+	 **/
+	$.Annotation = function (options) {
+		options = options || {};
 
-    /**
-     * Base class for all annotations.
-     *
-     * @class Annotation
-     * @classdesc Base class for all annotations.
-     * @memberof OpenSeadragonImaging
-     * @param {Object} options
-     *
-     **/
-    $.Annotation = function(options) {
-        options = options || {};
+		this._annoHost = null;
+	};
 
-        this._annoHost = null;
-    };
+	OSD.extend(
+		$.Annotation.prototype,
+		/** @lends OpenSeadragonImaging.Annotation.prototype */
+		{}
+	);
 
-    OSD.extend($.Annotation.prototype,
-    /** @lends OpenSeadragonImaging.Annotation.prototype */
-    {
-
-    });
-
-
-    /*
-     * @private
-     * @method
-     *
-     **/
-    //function onOpen() {
-    //}
-
-
-}(OpenSeadragon, window.OpenSeadragonImaging = window.OpenSeadragonImaging || {}));
+	/*
+	 * @private
+	 * @method
+	 *
+	 **/
+	//function onOpen() {
+	//}
+})(
+	OpenSeadragon,
+	(window.OpenSeadragonImaging = window.OpenSeadragonImaging || {})
+);
