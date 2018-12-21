@@ -1,24 +1,33 @@
 {
-  "name": "OpenSeadragonAnnoHost",
-  "version": "0.1.0",
-  "description": "OpenSeadragon plugin which provides a framework for annotating images.",
-  "engines": {
-    "node": ">= 1.0.0",
-    "npm": ">= 1.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/msalsbery/OpenSeadragonAnnoHost.git"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "grunt": "^1.0.3",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-uglify": "^4.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-eslint": "^21.0.0",
-    "grunt-git-describe": "^2.4.4",
-    "grunt-jsdoc": "^2.3.0"
-  }
+	"name": "openseadragonannohost",
+	"version": "2.0.0",
+	"description": "OpenSeadragon plugin which provides a framework for annotating images.",
+	"license": "MIT",
+	"homepage": "https://github.com/msalsbery/OpenSeadragonAnnoHost",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/msalsbery/OpenSeadragonAnnoHost.git"
+	},
+	"bugs": "https://github.com/msalsbery/OpenSeadragonAnnoHost/issues",
+	"keywords": [
+		"openseadragon",
+		"openseadragonimaging",
+		"openseadragon plugin",
+		"openseadragon annotation"
+	],
+	"engines": {
+		"node": ">= 5.0.0",
+		"npm": ">= 6.0.0"
+	},
+	"devDependencies": {
+		"grunt": "^1.0.3",
+		"grunt-contrib-clean": "^2.0.0",
+		"grunt-contrib-concat": "^1.0.1",
+		"grunt-contrib-copy": "^1.0.0",
+		"grunt-contrib-uglify": "^4.0.0",
+		"grunt-contrib-watch": "^1.1.0",
+		"grunt-eslint": "^21.0.0",
+		"grunt-git-describe": "^2.4.4",
+		"grunt-jsdoc": "^2.3.0"
+	}
 }
