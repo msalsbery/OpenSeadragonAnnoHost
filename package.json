@@ -1,5 +1,5 @@
 {
-	"name": "openseadragonannohost",
+	"name": "openseadragon-annohost",
 	"version": "2.0.0",
 	"description": "OpenSeadragon plugin which provides a framework for annotating images.",
 	"license": "MIT",
