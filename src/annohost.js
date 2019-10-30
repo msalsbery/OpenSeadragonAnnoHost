@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014 Mark Salsbery
+ * Copyright (c) 2013-2019 Mark Salsbery
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -35,9 +35,13 @@
  */
 
 (function (OSD, $, undefined) {
-	if (!OSD.version || OSD.version.major < 1) {
+	'use strict';
+
+	var svgNs = 'http://www.w3.org/2000/svg';
+
+	if (!OSD.version || OSD.version.major < 2) {
 		throw new Error(
-			'OpenSeadragon.Annotations requires OpenSeadragon version 1.0.0+'
+			'OpenSeadragon.Annotations requires OpenSeadragon version 2.0.0+'
 		);
 	}
 
@@ -48,6 +52,7 @@
 	 * @memberof external:"OpenSeadragon.Viewer"#
 	 * @param {Object} options
 	 * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link OpenSeadragonImaging.ImagingHelper.event:image-view-changed} handler method.
+	 * @param {Integer} [options.worldIndex] - The index of the image for world.getItemAt
 	 * @returns {OpenSeadragonImaging.AnnoHost}
 	 *
 	 **/
@@ -70,6 +75,7 @@
 	 * @param {Object} options
 	 * @param {external:"OpenSeadragon.Viewer"} options.viewer - Required! Reference to OpenSeadragon viewer to attach to.
 	 * @param {external:OpenSeadragon.EventHandler} [options.onImageViewChanged] - {@link OpenSeadragonImaging.ImagingHelper.event:image-view-changed} handler method.
+	 * @param {Integer} [options.worldIndex] - The index of the image for world.getItemAt
 	 *
 	 **/
 	$.AnnoHost = function (options) {
@@ -80,9 +86,9 @@
 				'OpenSeadragon.Annotations.AnnoHost requires the OpenSeadragonImagingHelper plugin.'
 			);
 		}
-		if (!$.ImagingHelper.version || $.ImagingHelper.version.major < 1) {
+		if (!$.ImagingHelper.version || $.ImagingHelper.version.major < 2) {
 			throw new Error(
-				'OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonImagingHelper plugin version 1.0.0+'
+				'OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonImagingHelper plugin version 2.0.0+'
 			);
 		}
 		if (typeof OSD.Viewer.prototype.addViewerInputHook !== 'function') {
@@ -90,9 +96,9 @@
 				'OpenSeadragon.Annotations.AnnoHost requires the OpenSeadragonViewerInputHook plugin.'
 			);
 		}
-		if (!$.ViewerInputHook.version || $.ViewerInputHook.version.major < 1) {
+		if (!$.ViewerInputHook.version || $.ViewerInputHook.version.major < 2) {
 			throw new Error(
-				'OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonViewerInputHook plugin version 1.0.0+'
+				'OpenSeadragon.Annotations.AnnoHost requires OpenSeadragonViewerInputHook plugin version 2.0.0+'
 			);
 		}
 		if (!options.viewer) {
@@ -166,6 +172,30 @@
 			'full-screen',
 			OSD.delegate(this, onFullScreen)
 		);
+
+		this._svg = function () {
+			var svg = document.createElementNS(svgNs, 'svg');
+			svg.setAttribute('class', 'osdi-annohost-svg');
+			//svg.setAttributeNS('http://www.w3.org/2000/svg','xlink','http://www.w3.org/1999/xlink');
+			svg.style.position = 'absolute';
+			svg.style.left = 0;
+			svg.style.top = 0;
+			svg.style.width = '100%';
+			svg.style.height = '100%';
+			svg.style.margin = 0;
+			svg.style.padding = 0;
+			svg.style.overflow = 'hidden';
+			svg.style.clip = 'auto'; //TODO Deprecated!
+			//svg.visibility = 'hidden';
+			svg.style.pointerEvents = 'all'; // bounding-box | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | none
+			svg.style.zoomAndPan = 'disable';
+			return svg;
+		}();
+		this._viewer.canvas.appendChild(this._svg);
+
+        // this._node = document.createElementNS(svgNs, 'g');
+        // this._svg.appendChild(this._node);
+
 	};
 
 	/**
